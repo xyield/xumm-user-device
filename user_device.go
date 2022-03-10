@@ -30,6 +30,13 @@ type UserDevice struct {
 	UniqueDeviceIdentifier string
 }
 
+func NewUserDevice(t, udi string) *UserDevice {
+	return &UserDevice{
+		AccessToken:            t,
+		UniqueDeviceIdentifier: udi,
+	}
+}
+
 func (u *UserDevice) Ping() (*mdls.Pong, error) {
 	req, err := http.NewRequest(http.MethodPost, XUMM_API_PREFIX+"ping", nil)
 	if err != nil {
