@@ -25,6 +25,8 @@ const (
 
 var client http.Client
 
+var debug bool = false
+
 type UserDevice struct {
 	AccessToken            string
 	UniqueDeviceIdentifier string
@@ -35,6 +37,10 @@ func NewUserDevice(t, udi string) *UserDevice {
 		AccessToken:            t,
 		UniqueDeviceIdentifier: udi,
 	}
+}
+
+func SetDebugMode() {
+	debug = true
 }
 
 func (u *UserDevice) Ping() (*mdls.Pong, error) {
@@ -86,7 +92,9 @@ func (u *UserDevice) OpenPayload(uuid string) error {
 		return err
 	}
 
-	utils.PrettyPrintJson(p)
+	if debug {
+		utils.PrettyPrintJson(p)
+	}
 
 	if !p.Meta.Exists {
 		return &PayloadNotFoundError{UUID: uuid}
@@ -120,7 +128,10 @@ func (u *UserDevice) RejectRequest(uuid string) error {
 	if err != nil {
 		return err
 	}
-	utils.PrettyPrintJson(j)
+
+	if debug {
+		utils.PrettyPrintJson(j)
+	}
 
 	return nil
 }
@@ -136,8 +147,9 @@ func (u *UserDevice) SignRequest(uuid, txType string) error {
 	if err != nil {
 		return err
 	}
-
-	fmt.Println(string(body))
+	if debug {
+		fmt.Println("Request body:", string(body))
+	}
 
 	req, err := http.NewRequest(http.MethodPatch, XUMM_API_PREFIX+"payload/"+uuid, bytes.NewReader(body))
 	if err != nil {
@@ -160,7 +172,10 @@ func (u *UserDevice) SignRequest(uuid, txType string) error {
 	if err != nil {
 		return err
 	}
-	utils.PrettyPrintJson(j)
+
+	if debug {
+		utils.PrettyPrintJson(j)
+	}
 	return nil
 }
 
